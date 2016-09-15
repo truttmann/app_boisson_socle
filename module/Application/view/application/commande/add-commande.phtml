@@ -1,0 +1,106 @@
+<?php
+ // module/Album/view/album/album/add.phtml:
+
+ $title = "Ajout d'une commande";
+ $this->headTitle($title);
+ ?>
+<div class="col-xs-12">
+    <div class="col-xs-9">
+        <h1><?php echo $this->escapeHtml($title); ?></h1> 
+    </div>
+    <div class="col-xs-3 text-right">
+        <input type="button" class="retour  btn btn-info btn-lg" value="Retour" />
+    </div>
+</div>
+<div class="clearfix"></div>
+<br/><br/>
+
+<form method="POST" action="commande/<?php echo $user_ref->id; ?>/addCommande">
+    <input type="hidden" name="idcmd" value="" />
+    <table class="col-xs-12 .table-striped table_commande">
+        <thead>
+            <tr>
+                <th class="col-xs-4">Produit</th>
+                <th class="col-xs-4">Description</th>
+                <th class="col-xs-1">Prix HT</th>
+                <th class="col-xs-1">Quantit&eacute;</th>
+                <th class="col-xs-2">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <div class="col-xs-12 form-group">
+                        <select  class="form-control">
+                            <?php foreach ($list_product as $k => $v) { ?>
+                            <option value="<?php echo $k; ?>"><?php echo $v; ?></option>
+                            <?php } ?>
+                        </select>
+                    </div>
+                </td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+                <td>
+                    <input type="button" attr-usr-id="<?php echo $user_ref->id; ?>" class="add_pro_comm btn btn-info btn-sm" value="Ajouter" />
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="col-xs-12 text-center">
+        <input type="submit" class="btn btn-info btn-lg" value="Valider" />
+    </div>
+</form>
+<script type="text/javascript">
+    jQuery(document).ready(function($) {
+        $('.retour').unbind('click').on('click', function(){
+            location.href=url_front_application +"commande/<?php echo $user_ref->id; ?>/list";
+        });
+        
+        $('.add_pro_comm').unbind('click').on('click', function(){
+            if($('.table_commande select > option:selected').val() != null) {
+                var element = this;
+                
+                /* requête ajax pour avoir les informations sur le produit */
+                $.ajax({
+                    method: "POST",
+                    dataType : 'json',
+                    url: 'commande/'+$(element).attr("attr-usr-id")+"/info/"+$('.table_commande select > option:selected').val(),
+                    data: {}
+                }).done(function(data) {
+                    if(data.status == 1) {
+                        var chaine = '<tr attr-prod-id="'+$('.table_commande select > option:selected').val()+'">';
+                        chaine += '    <td>'+$('.table_commande select > option:selected').text()+'</td>';
+                        chaine += '    <td>'+data.data.description.substr(0.60)+((data.data.description.length > 60)?'...':'')+'</td>';
+                        chaine += '    <td>'+data.data.prix_base+'</td>';
+                        chaine += '    <td><input type="text" class="form-control" name="prod_'+$('.table_commande select > option:selected').val()+"_"+Math.random()+'" class="key_restrict" value="1"></td>';
+                        chaine += '    <td><input type="button" class="delProCom btn btn-info btn-sm" value="Supprimer" /></td>';
+                        chaine += '</tr>';
+                        $('.table_commande tbody').prepend(chaine);
+                        initEvent();
+                    } else {
+                        alert(data.message);
+                    }
+                }).fail(function() {
+                    alert( "error" );
+                });
+            }                
+        });
+        
+        function initEvent() {
+            $('.delProCom').unbind('click').on('click', function(event) {
+                event.preventDefault();
+                $(this).parents("tr")[0].remove();
+            });
+            $('input.key_restrict').bind('keypress', function (event) {
+                var regex = new RegExp("^[0-9]+$");
+                var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
+                if (!regex.test(key)) {
+                   event.preventDefault();
+                   return false;
+                }
+            });
+        }
+        initEvent();
+    });
+</script>

@@ -1,0 +1,70 @@
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+
+<h1>Liste des cat&eacute;gories</h1>
+<br/><br/>
+
+<div class="text-right">
+    <button class="btn btn-info btn-lg ajout_category">Ajouter une cat&eacute;gorie</button>
+</div>
+<br/><br/>
+
+<table class="col-xs-12 table">
+    <thead>
+        <tr>
+            <th class="col-xs-5">Identifi&eacute;</th>    
+            <th class="col-xs-2">Libell&eacute;</th>
+            <th class="col-xs-3">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php foreach($category as $item) { ?>
+        <tr>
+            <td><?php echo $item->id; ?></td>   
+            <td><?php echo $item->libelle; ?></td>             
+            <td>
+                <button class="edit_category btn btn-info btn-sm" attr-id="<?php echo $item->id?>">Editer</button>
+                <button class="list_product btn btn-info btn-sm" attr-id="<?php echo $item->id?>">Lister les produits</button>
+                <button class="delete_category btn btn-info btn-sm" attr-id="<?php echo $item->id?>">Supprimer</button>
+            </td>
+        </tr>
+        <?php if (property_exists($item, "souscategorie") && is_array($item->souscategorie) && count($item->souscategorie) > 0 ){ ?>
+             <?php foreach($item->souscategorie as $i) { ?>
+            <tr>
+                <td> >&nbsp;&nbsp;&nbsp;&nbsp;<?php echo $i->id; ?></td>   
+                <td> >&nbsp;&nbsp;&nbsp;&nbsp;<?php echo $i->libelle; ?></td>             
+                <td>
+                    <button class="edit_category btn btn-info btn-sm" attr-id="<?php echo $i->id?>">Editer</button>
+                    <button class="list_product btn btn-info btn-sm" attr-id="<?php echo $i->id?>">Lister les produits</button>
+                    <button class="delete_category btn btn-info btn-sm" attr-id="<?php echo $i->id?>">Supprimer</button>
+                </td>
+            </tr>
+            <?php } ?>            
+        <?php } ?>
+        <?php } ?>
+    </tbody>
+    
+</table>
+
+<script type="text/javascript">
+    jQuery(document).ready(function($) {
+        $('.ajout_category').unbind('click').on('click', function(){
+            location.href=url_front_application +"catalogue/addCategory";
+        });
+        
+        $('.edit_category').unbind('click').on('click', function(){
+            location.href=url_front_application +"catalogue/editCategory/"+$(this).attr('attr-id');
+        });
+        
+        $('.delete_category').unbind('click').on('click', function(){
+            location.href=url_front_application +"catalogue/delCategory/"+$(this).attr('attr-id');
+        });
+        
+        $('.list_product').unbind('click').on('click', function(){
+            location.href=url_front_application +"catalogue/listProduct/"+$(this).attr('attr-id');
+        });
+    });
+</script>

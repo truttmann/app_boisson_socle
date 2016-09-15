@@ -1,0 +1,44 @@
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+
+<h1>Historique</h1>
+<br/><br/>
+
+
+<table class="col-xs-12 table">
+    <thead>
+        <tr>
+            <th class="col-xs-3">Date</th> 
+            <th class="col-xs-3">Identité</th>            
+            <th class="col-xs-2">Libellé entité</th>
+            <th class="col-xs-1">Identifiant entité</th>
+            <th class="col-xs-3">Commentaire</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php foreach($histo as $item) { ?>
+            <tr>
+                <td><?php echo $item->action_date?></td>
+                <td><?php echo $item->user_id->name." ".$item->user_id->firstname; ?></td>             
+                <td><?php echo $item->object?></td>
+                <td><?php echo $item->object_id?></td>
+                <td><?php 
+					$t = substr($item->commentaire, (strpos($item->commentaire, 'Data: {')+6));
+					$m = json_decode($t, true);
+					$c = array();
+					foreach($m as $k => $i){
+						if(!in_array(strtolower($k) , array('updated_by', "created_at", "updated_at", "total_heure", "password", "token"))){
+							$c[] = ucfirst($k)." = ". $i; 
+						}
+					}
+					
+					echo substr($item->commentaire, 0, (strpos($item->commentaire, 'Data: {')))."<br/> Data: <br/><div style='padding-left:15px'>".implode('<br/>', $c)."</div>";
+				?></td>
+            </tr>
+        <?php } ?>
+    </tbody>
+    
+</table>

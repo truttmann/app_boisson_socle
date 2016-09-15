@@ -1,0 +1,88 @@
+<?php echo $this->doctype(); ?>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <base href="<?php echo $basePath ?>" />
+        <script type="application/javascript">
+            var url_front_application = "<?php echo $basePath ?>";
+        </script>
+        <?php echo $this->headTitle("")->setSeparator(' - ')->setAutoEscape(false) ?>
+
+        <?php echo $this->headMeta()
+            ->appendName('viewport', 'width=device-width, initial-scale=1.0')
+            ->appendHttpEquiv('X-UA-Compatible', 'IE=edge')
+        ?>
+
+        <!-- Le styles -->
+        <?php echo $this->headLink(array('rel' => 'shortcut icon', 'type' => 'image/vnd.microsoft.icon', 'href' => $this->basePath() . '/img/favicon.ico'))
+                        ->prependStylesheet($this->basePath('css/jquery.datetimepicker.css'))
+                        ->prependStylesheet($this->basePath('css/style.css'))
+                        ->prependStylesheet($this->basePath('css/bootstrap-theme.min.css'))
+                        ->prependStylesheet($this->basePath('css/bootstrap.min.css')) ?>
+        
+        <!-- Scripts -->
+        <?php echo $this->headScript()
+            ->prependFile($this->basePath('js/jquery.datetimepicker.full.min.js'))
+            ->prependFile($this->basePath('js/bootstrap.min.js'))
+            ->prependFile($this->basePath('js/jquery.min.js'))
+            ->prependFile($this->basePath('js/respond.min.js'), 'text/javascript', array('conditional' => 'lt IE 9',))
+            ->prependFile($this->basePath('js/html5shiv.min.js'),   'text/javascript', array('conditional' => 'lt IE 9',))
+        ; ?>
+
+    </head>
+    <body>
+        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                </div>
+                <div class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li class="<?php echo (($menu_active == "home")?"active":"") ?>"><a href="<?php echo $this->url('dashboard') ?>"><?php echo $this->translate('Home') ?></a></li>
+                        <?php if (isset($user_info)) { ?>
+                            <li class="<?php echo (($menu_active == "user")?"active":"") ?>"><a href="<?php echo $this->url('user') ?>"><?php echo $this->translate('Utilisateur') ?></a></li>
+                            <li class="<?php echo (($menu_active == "member")?"active":"") ?>"><a href="<?php echo $this->url('member') ?>"><?php echo $this->translate('Employ&eacute;') ?></a></li>
+                            <li class="<?php echo (($menu_active == "catalogue")?"active":"") ?>"><a href="<?php echo $this->url('catalogue') ?>"><?php echo $this->translate('Catalogue') ?></a></li>
+                            <li class="<?php echo (($menu_active == "stock")?"active":"") ?>"><a href="<?php echo $this->url('stock') ?>"><?php echo $this->translate('Stock') ?></a></li>
+                            <li class="<?php echo (($menu_active == "commande")?"active":"") ?>"><a href="<?php echo $this->url('commande') ?>"><?php echo $this->translate('Commande') ?></a></li>
+                            <?php if ($user_info->profil == "AD") { ?>
+                            <li class="<?php echo (($menu_active == "historique")?"active":"") ?>"><a href="<?php echo $this->url('historique') ?>"><?php echo $this->translate('Historique') ?></a></li>
+                            <?php } ?>
+                            <li class=""><a href="<?php echo $this->url('login/disconnect') ?>"><?php echo $this->translate('Déconnexion') ?></a></li>
+                        <?php } ?>
+                    </ul>
+                </div><!--/.nav-collapse -->
+            </div>
+        </nav>
+        <div class="container">
+            <?php
+                $children = $this->viewModel()
+                ->getCurrent()
+                ->getChildren();
+ 
+                $ourView  = $children[0];
+
+                if (isset($ourView->flashMessages) && count($ourView->flashMessages)) : ?>
+                <div class="alert alert-warning alert-dismissable">
+                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                    <ul>
+                    <?php foreach ($ourView->flashMessages as $fMessage) : ?>
+                    <li style="list-style: none;"><?php echo $fMessage; ?></li>
+                    <?php endforeach; ?>
+                    </ul>
+                </div>
+                <?php endif; ?>
+            <?php echo $this->content; ?>
+            <hr>
+            <footer>
+                <p>&copy; 2005 - <?php echo date('Y') ?> <?php echo $this->translate('All rights reserved.') ?></p>
+            </footer>
+        </div> <!-- /container -->
+        <?php echo $this->inlineScript() ?>
+    </body>
+</html>

@@ -1,0 +1,59 @@
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+
+<h1>Liste des produit de la cat&eacute;gorie <b><?php echo $categorie->libelle; ?></b></h1>
+<br/><br/>
+
+<div class="text-right">
+    <button class="btn btn-info btn-lg ajout_product"  attr-cat-id="<?php echo $categorie->id; ?>">Ajouter un produit</button>
+    <button class="btn btn-info btn-lg retour_category">Retour &agrave; liste des cat&eacute;gories</button>
+</div>
+<br/><br/>
+
+<table class="col-xs-12 table">
+    <thead>
+        <tr>
+            <th class="col-xs-5">Identifi&eacute;</th>    
+            <th class="col-xs-2">Libell&eacute;</th>    
+            <th class="col-xs-2">Actif</th>
+            <th class="col-xs-3">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php foreach($produits as $item) { ?>
+        <tr>
+            <td><?php echo $item->id; ?></td>   
+            <td><?php echo $item->libelle; ?></td> 
+            <td><?php echo (($item->published == 1)?"Oui":"Non"); ?></td>            
+            <td>
+                <button class="edit_product btn btn-info btn-sm"  attr-cat-id="<?php echo $categorie->id; ?>" attr-id="<?php echo $item->id?>">Editer</button>
+                <button class="delete_product btn btn-info btn-sm"  attr-cat-id="<?php echo $categorie->id; ?>" attr-id="<?php echo $item->id?>">Supprimer</button>
+            </td>
+        </tr>
+        <?php } ?>
+    </tbody>
+    
+</table>
+
+<script type="text/javascript">
+    jQuery(document).ready(function($) {
+        $('.ajout_product').unbind('click').on('click', function(){
+            location.href=url_front_application +"catalogue/addProduct/"+$(this).attr('attr-cat-id');
+        });
+        
+        $('.edit_product').unbind('click').on('click', function(){
+            location.href=url_front_application +"catalogue/editProduct/"+$(this).attr('attr-cat-id')+"/"+$(this).attr('attr-id');
+        });
+        
+        $('.delete_product').unbind('click').on('click', function(){
+            location.href=url_front_application +"catalogue/delProduct/"+$(this).attr('attr-cat-id')+"/"+$(this).attr('attr-id');
+        });
+        
+        $('.retour_category').unbind('click').on('click', function(){
+            location.href=url_front_application +"catalogue";
+        });
+    });
+</script>

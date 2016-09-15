@@ -1,0 +1,67 @@
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+
+<h1>Liste des commandes du client <b><?php echo $user_ref->societe; ?></b></h1>
+<br/><br/>
+
+<div class="text-right">
+    <button class="btn btn-info btn-lg ajout_commande"  attr-usr-id="<?php echo $user_ref->id; ?>">Ajouter une commande</button>
+    <button class="btn btn-info btn-lg retour_societe">Retour &agrave; liste des soci&eacute;t&eacute;</button>
+</div>
+<br/><br/>
+
+<table class="col-xs-12 table">
+    <thead>
+        <tr>
+            <th class="col-xs-3">Identifi&eacute;</th>    
+            <th class="col-xs-2">Statut</th>
+            <th class="col-xs-2">Num&eacute;ro</th>    
+            <th class="col-xs-2">Date Commande</th>
+            <th class="col-xs-2">Montant TTC</th>
+            <th class="col-xs-3">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php foreach($list_comande as $item) { ?>
+        <tr>
+            <td><?php echo $item->id; ?></td>   
+            <td>
+                <div class="col-xs-12" style="background-color: <?php echo (($item->status == 1)?"lightgrey":(($item->status == 2)?"lightblue":(($item->status == 3)?"lightpink":(($item->status == 4)?"light-green":"red")))); ?>">
+                    <?php echo (($item->status == 1)?"En cours":(($item->status == 2)?"Livr&eacute;e":(($item->status == 3)?"Valid&eacute;e":(($item->status == 4)?"Pay&eacute;e":"Annul&eacute;")))); ?>
+                </div>
+            </td>   
+            <td><?php echo $item->numero; ?></td> 
+            <td><?php $date = \DateTime::createFromFormat('Y-m-d H:i:s', $item->created_at); echo ((is_object($date))?$date->format('d-m-Y H:i:s'):""); ?></td>
+            <td><?php echo $item->montant_ttc; ?></td> 
+            <td>
+                <button class="edit_commande btn btn-info btn-sm" attr-usr-id="<?php echo $user_ref->id; ?>" attr-id="<?php echo $item->id ?>">D&eacute;tail</button>
+                <button class="delete_commande btn btn-info btn-sm"  attr-usr-id="<?php echo $user_ref->id; ?>" attr-id="<?php echo $item->id ?>">Supprimer</button>
+            </td>
+        </tr>
+        <?php } ?>
+    </tbody>
+    
+</table>
+
+<script type="text/javascript">
+    jQuery(document).ready(function($) {
+        $('.ajout_commande').unbind('click').on('click', function(){
+            location.href=url_front_application +"commande/"+$(this).attr('attr-usr-id')+"/addCommande";
+        });
+        
+        $('.edit_commande').unbind('click').on('click', function(){
+            location.href=url_front_application +"commande/"+$(this).attr('attr-usr-id')+"/detail/"+$(this).attr('attr-id');
+        });
+        
+        $('.delete_commande').unbind('click').on('click', function(){
+            location.href=url_front_application +"commande/"+$(this).attr('attr-usr-id')+"/delCommande/"+$(this).attr('attr-id');
+        });
+        
+        $('.retour_societe').unbind('click').on('click', function(){
+            location.href=url_front_application +"commande";
+        });
+    });
+</script>

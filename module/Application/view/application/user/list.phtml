@@ -1,0 +1,59 @@
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+
+<h1>Liste des utilisateurs</h1>
+<br/><br/>
+
+<div class="text-right">
+    <button class="btn btn-info btn-lg ajout_user">Ajouter un utilisateur</button>
+</div>
+<br/><br/>
+
+<table class="col-xs-12 table">
+    <thead>
+        <tr>
+            <th class="col-xs-5">Identifi&eacute;</th>    
+            <th class="col-xs-2">Soci&eacute;t&eacute;</th>    
+            <th class="col-xs-2">Actif</th>
+            <th class="col-xs-3">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php foreach($users as $item) { ?>
+        <tr>
+            <td><?php echo $item->name." ".$item->firstname; ?></td>             
+            <td><?php echo $item->societe; ?></td>
+            <td><?php echo (($item->published == 1)?"Oui":"Non"); ?></td>
+            <td>
+                <button class="edit_user btn btn-info btn-sm" attr-id="<?php echo $item->id?>">Editer</button>
+                <button class="regenerer_user btn btn-info btn-sm" attr-id="<?php echo $item->id?>">R&eacute;g&eacute;n&eacute;rer cl&eacute;</button>
+                <?php if ($item->published == 1){ ?> <button class="delete_user btn btn-info btn-sm" attr-id="<?php echo $item->id?>">D&eacute;sactiver</button> <?php } ?>
+            </td>
+        </tr>
+        <?php } ?>
+    </tbody>
+    
+</table>
+
+<script type="text/javascript">
+    jQuery(document).ready(function($) {
+        $('.ajout_user').unbind('click').on('click', function(){
+            location.href=url_front_application +"user/add";
+        });
+        
+        $('.edit_user').unbind('click').on('click', function(){
+            location.href=url_front_application +"user/edit/"+$(this).attr('attr-id');
+        });
+        
+        $('.delete_user').unbind('click').on('click', function(){
+            location.href=url_front_application +"user/delete/"+$(this).attr('attr-id');
+        });
+        
+        $('.regenerer_user').unbind('click').on('click', function(){
+            location.href=url_front_application +"user/regenerercle/"+$(this).attr('attr-id');
+        });
+    });
+</script>

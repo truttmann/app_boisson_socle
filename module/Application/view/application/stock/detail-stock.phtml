@@ -1,0 +1,59 @@
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+
+<h1>Liste des produit du stock du client <b><?php echo $user_ref->societe; ?></b></h1>
+<br/><br/>
+
+<div class="text-right">
+    <button class="btn btn-info btn-lg ajout_product"  attr-usr-id="<?php echo $user_ref->id; ?>">Ajouter un produit</button>
+    <button class="btn btn-info btn-lg retour_societe">Retour &agrave; liste des soci&eacute;t&eacute;</button>
+</div>
+<br/><br/>
+
+<table class="col-xs-12 table">
+    <thead>
+        <tr>
+            <th class="col-xs-5">Identifi&eacute;</th>    
+            <th class="col-xs-2">Libell&eacute;</th>    
+            <th class="col-xs-2">Quantit&eacute;</th>
+            <th class="col-xs-3">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php foreach($list_stock as $item) { ?>
+        <tr>
+            <td><?php echo $item->id; ?></td>   
+            <td><?php echo $item->product->libelle; ?></td> 
+            <td><?php echo $item->quantite ?></td>            
+            <td>
+                <button class="edit_product btn btn-info btn-sm" attr-usr-id="<?php echo $user_ref->id; ?>" attr-id="<?php echo $item->id ?>">Editer</button>
+                <button class="delete_product btn btn-info btn-sm"  attr-usr-id="<?php echo $user_ref->id; ?>" attr-id="<?php echo $item->id ?>">Supprimer</button>
+            </td>
+        </tr>
+        <?php } ?>
+    </tbody>
+    
+</table>
+
+<script type="text/javascript">
+    jQuery(document).ready(function($) {
+        $('.ajout_product').unbind('click').on('click', function(){
+            location.href=url_front_application +"stock/"+$(this).attr('attr-usr-id')+"/addProduct";
+        });
+        
+        $('.edit_product').unbind('click').on('click', function(){
+            location.href=url_front_application +"stock/"+$(this).attr('attr-usr-id')+"/editProduct/"+$(this).attr('attr-id');
+        });
+        
+        $('.delete_product').unbind('click').on('click', function(){
+            location.href=url_front_application +"stock/"+$(this).attr('attr-usr-id')+"/delProduct/"+$(this).attr('attr-id');
+        });
+        
+        $('.retour_societe').unbind('click').on('click', function(){
+            location.href=url_front_application +"stock";
+        });
+    });
+</script>
