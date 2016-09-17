@@ -125,6 +125,9 @@ class UserTable
             'tva' => $user->tva,
             'horaire' => $user->horaire,
             'information' => $user->information,
+            'fonction' => $user->fonction,
+            'telephone' => $user->telephone,
+            'droit_mobile' => $user->droit_mobile,
             'updated_by' => ((is_object($user2))?$user2->id:2),
         );
         

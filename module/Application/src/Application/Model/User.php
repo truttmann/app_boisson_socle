@@ -23,6 +23,9 @@ class User implements InputFilterAwareInterface
     public $tva;
     public $horaire;
     public $information;
+    public $fonction;
+    public $telephone;
+    public $droit_mobile;
     
     protected $inputFilter;  
 
@@ -46,6 +49,10 @@ class User implements InputFilterAwareInterface
         $this->tva   = (!empty($data['tva'])) ? $data['tva'] : null;
         $this->horaire   = (!empty($data['horaire'])) ? $data['horaire'] : null;
         $this->information   = (!empty($data['information'])) ? $data['information'] : null;
+        $this->fonction   = (!empty($data['fonction'])) ? $data['fonction'] : null;
+        $this->telephone   = (!empty($data['telephone'])) ? $data['telephone'] : null;
+        $this->droit_mobile   = (!empty($data['droit_mobile'])) ? $data['droit_mobile'] : 1;
+        
     }
     
     // Add the following method:

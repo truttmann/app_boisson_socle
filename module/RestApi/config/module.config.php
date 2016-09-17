@@ -3,6 +3,7 @@ return array(
     'controllers' => array(
         'invokables' => array(
             'RestApi\Controller\UserController' => 'RestApi\Controller\UserController',
+            'RestApi\Controller\MemberController' => 'RestApi\Controller\MemberController',
             'RestApi\Controller\CategorieController' => 'RestApi\Controller\CategorieController',
         ),
     ),
@@ -11,12 +12,24 @@ return array(
             'user-rest' => array(
                 'type'    => 'segment',
                 'options' => array(
-                    'route'    => '/rest-login[/:token]',
+                    'route'    => '/rest-user[/:token]',
                     'constraints' => array(
                         'token'     => '[a-zA-Z0-9]+',
                     ),
                     'defaults' => array(
                         'controller' => 'RestApi\Controller\UserController',
+                    ),
+                ),
+            ),
+            'member-rest' => array(
+                'type'    => 'segment',
+                'options' => array(
+                    'route'    => '/rest-member[/:id]',
+                    'constraints' => array(
+                        'id'     => '[a-zA-Z0-9]+',
+                    ),
+                    'defaults' => array(
+                        'controller' => 'RestApi\Controller\MemberController',
                     ),
                 ),
             ),
