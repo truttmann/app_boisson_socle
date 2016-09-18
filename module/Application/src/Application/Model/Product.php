@@ -41,6 +41,29 @@ class Product implements InputFilterAwareInterface
         $this->type_embouteillage_id         = (!empty($data['type_embouteillage_id'])) ? $data['type_embouteillage_id'] : null;
         $this->type_colisage_id          = (!empty($data['type_colisage_id'])) ? $data['type_colisage_id'] : null;
         $this->published          = (!empty($data['published'])) ? $data['published'] : null;
+        
+        $t = array_keys($data);
+        foreach($t as $k) {
+            if(in_array($k, array(
+                "id",
+                "libelle",
+                "description",
+                "image", 
+                "prix_base",
+                "montant_taxe1",
+                "montant_taxe2",
+                "montant_tva",
+                "montant_total",
+                "producteur",
+                "contenance",
+                "type_embouteillage_id",
+                "type_colisage_id",
+                "published")
+            )) {
+                continue;
+            }
+            $this->$k = $data[$k];
+        }
     }
     
     // Add the following method:

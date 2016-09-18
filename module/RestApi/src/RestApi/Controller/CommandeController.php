@@ -5,7 +5,7 @@ use Zend\Mvc\Controller\AbstractRestfulController;
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
  
-class CategorieController extends AbstractRestfulController
+class CommandeController extends AbstractRestfulController
 {
     public function get($id)
     {
@@ -56,7 +56,7 @@ class CategorieController extends AbstractRestfulController
                 );
             }
             
-            $response->setContent($_GET['callback'].'('.json_encode(array("data" => $obj)).')');
+            $response->setContent($_GET['callback'].'('.json_encode(array("result" => $obj)).')');
         }catch( \Exception $e) {
             $response->setStatusCode(200)->setContent($_GET['callback'].'('."ko : ".$e->getMessage().')');
         }

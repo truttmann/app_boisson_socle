@@ -90,6 +90,16 @@ class UserTable
         }
         return $row;
     }
+    public function getBoss(User $user)
+    {
+        $id  = (int) $id;
+        $rowset = $this->tableGateway->select(array('societe' => $user->societe, 'profil_id' => 1));
+        $row = $rowset->current();
+        if (!$row) {
+            throw new \Exception("Could not find row $id");
+        }
+        return $row;
+    }
     public function getByLogin($login)
     {
         $rowset = $this->tableGateway->select(array('login' => $login));

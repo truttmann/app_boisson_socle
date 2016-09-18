@@ -5,8 +5,43 @@ use Zend\Mvc\Controller\AbstractRestfulController;
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
  
-class CategorieController extends AbstractRestfulController
+class ProduitController extends AbstractRestfulController
 {
+    // methode liste, ex : "/wine"
+	protected $collectionMethod = array('GET', 'POST'); 
+	// methode unitaire, ex : "/wine?slug=sociando_mallet-42"
+	protected $ressourceMethod = array('GET', 'POST', 'PUT', 'DELETE'); 
+    
+    protected $identifierName = 'id';
+	
+	public function setEventManager(\Zend\EventManager\EventManagerInterface $events) {
+		parent::setEventManager($events);
+		$events->attach('dispatch', array($this, 'checkMethod'), 10);
+	}
+	
+	protected function _getMethod() {
+        if ($this->params()->fromRoute('id', false)){
+			return $this->ressourceMethod;
+		}
+		return $this->collectionMethod;
+	}
+
+	public function checkMethod($e) {
+		if (in_array($e->getRequest()->getMethod(), $this->_getMethod())){
+			return;
+		}
+		$response = $this->getResponse();
+		$response->setStatusCode(405);
+		return $response;
+	}
+	
+	public function options() {
+		$response = $this->getResponse();
+		$response->getHeaders()
+		->addHeaderLine('Allow', implode(',', $this->_getMethod()));
+		return $response;
+	}
+    
     public function get($id)
     {
         /* ici, nous allons recherche les informations sur cette categorie, et lister tous les sous catégories, ainsi que tous produits */
@@ -76,19 +111,36 @@ class CategorieController extends AbstractRestfulController
                 throw new \Exception("Invalid parameters");
             }
             
-            /*TODO : verification du token */
+            /* verification du token */
             $user = $this->getServiceLocator()->get("UserTable")->getByToken($data["token"]);
             if(!is_object($user)) {
                 throw new \Exception("Invalid parameters.");
             }
             
-            $tab = $this->getServiceLocator()->get("CategoryTable")->fetchAll(array("categorie_id IS NULL"), "libelle");
+            /* recuperation du boss */
+            if($user->profil_id != 1) {
+                $user = $this->getServiceLocator()->get("UserTable")->getBoss($user);
+                if(!is_object($user)) {
+                    throw new \Exception("Invalid parameters.");
+                }
+            }
+
+            /* recherche des informations de quantite du stock entreprise des produits */
+            $where = array();
+            if(array_key_exists("l", $_GET)) {
+                $t = explode ("_", $_GET['l']);
+                $where[] = "produit.id IN (".implode(",", $t).")";
+            }
+            
+            $tab = $this->getServiceLocator()->get("ProductTable")->fetchAllWithStock($user, $where, "libelle");
             
             $return = array();
             foreach ($tab as $i) {
                 $return[] = array(
                     "id" => $i->id,
-                    "libelle" => $i->libelle
+                    "libelle" => $i->libelle,
+                    "prix_base" => $i->prix_base,
+                    "quantite" => $i->quantite
                 );
             }
             

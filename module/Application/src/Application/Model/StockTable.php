@@ -94,6 +94,17 @@ class StockTable
         }
         return $row;
     }
+    public function getStockByUserProd($idU, $idP)
+    {
+        $idU  = (int) $idU;
+        $idP  = (int) $idP;
+        $rowset = $this->tableGateway->select(array('user_id' => $idU, 'produit_id' => $idP));
+        $row = $rowset->current();
+        if (!$row) {
+            return null;
+        }
+        return $row;
+    }
     public function save(Stock $stock, User $user2 = null)
     {
         $data = array(

@@ -17,6 +17,42 @@ class ProductTable
         $resultSet = $this->tableGateway->select($where);
         return $resultSet;
     }
+    public function fetchAllWithStock(User $user, $where = array(), $orderby)
+    {
+        $return = array();
+        $sql = new Sql($this->tableGateway->getAdapter());
+        $select = $sql->select();
+        
+        $select->from('produit');
+        $select->join("stock", new \Zend\Db\Sql\Predicate\Expression("(stock.user_id = ".$user->id." AND stock.produit_id = produit.id)"), "quantite", "left");
+        if(!empty($where)){
+            $select->where($where);
+        }        
+        if($orderby != null) {
+            $select->order($orderby);
+        }
+        
+        $resultSet = $this->tableGateway->selectWith($select);
+        return $resultSet;
+    }
+    public function fetchAllByStock(User $user, $where = array(), $orderby)
+    {
+        $return = array();
+        $sql = new Sql($this->tableGateway->getAdapter());
+        $select = $sql->select();
+        
+        $select->from('produit');
+        $select->join("stock", new \Zend\Db\Sql\Predicate\Expression("(stock.user_id = ".$user->id." AND stock.produit_id = produit.id)"), "quantite", "inner");
+        if(!empty($where)){
+            $select->where($where);
+        }        
+        if($orderby != null) {
+            $select->order($orderby);
+        }
+        
+        $resultSet = $this->tableGateway->selectWith($select);
+        return $resultSet;
+    }
     public function fetchAllByCategorie ($id) {
         $return = array();
         $sql = new Sql($this->tableGateway->getAdapter());
