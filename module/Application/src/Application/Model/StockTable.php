@@ -139,6 +139,26 @@ class StockTable
             "action_date" => date('Y-m-d H:i:s')
         ));
     }
+    public function saveHistorique($motif, User $boss, User $user){
+        $adapter = $this->tableGateway->getAdapter();
+        $fac = new TableGateway("historique_e_s", $adapter);
+        $fac->insert(array(
+            "user_id" => $user->id,
+            "motif" => $motif,
+            "stock_id" => new \Zend\Db\Sql\Predicate\Expression("(select id from stock where user_id =".$boss->id." LIMIT 1)")
+        ));
+        return $fac->getLastInsertValue();
+    }
+    public function saveHistoriqueProduct($id_historique, $id_product, $quantite){
+        $adapter = $this->tableGateway->getAdapter();
+        $fac = new TableGateway("historique_e_s_produit", $adapter);
+        $fac->insert(array(
+            "historique_e_s_id" => $id_historique,
+            "produit_id" => $id_product,
+            "quantite" => $quantite
+        ));
+        return;
+    }
     public function delete($idStock, User $user = null)
     {
         $this->tableGateway->delete(array('id'=>$idStock));

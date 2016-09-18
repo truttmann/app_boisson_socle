@@ -172,10 +172,21 @@ class StockController extends AbstractRestfulController
             if(!array_key_exists('product', $data) || ! is_array($data['product']) || count($data['product']) == 0) {
                 throw new \Exception("Invalid parameters.");
             }
+            if(!array_key_exists('motif', $data) || empty($data['motif'])) {
+                $data['motif'] = "livraison";
+            }
+            
+            /* sauvegarde de l'historique */
+            $h_id = $this->getServiceLocator()->get("StockTable")->saveHistorique($data['motif'], $boss, $user);
             
             /* parcours de tous les produits, et ajout au stock */
             foreach($data['product'] as $item) {
                 $l = $this->getServiceLocator()->get("StockTable")->getStockByUserProd($boss->id, $item['id']);
+                
+                /* sauvegarde de l'historique */
+                $this->getServiceLocator()->get("StockTable")->saveHistoriqueProduct($h_id, $item['id'], $item['qt']);
+                
+                /* modification des stock */
                 if($l == null) {
                     /* element non présent dans le stock*/
                     $l = new \Application\Model\Stock();
