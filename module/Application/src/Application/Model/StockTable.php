@@ -26,6 +26,30 @@ class StockTable
         }
         return $return;
     }
+    public function fetchAllMouvement(User $user){
+        $sql = new Sql($this->tableGateway->getAdapter());
+        $select = $sql->select();
+        $select->columns(array("*"));
+        $select->from('historique_e_s');
+        $select->join('stock','stock.id = historique_e_s.stock_id', array(), "inner");
+        $select->join('historique_e_s_produit', 'historique_e_s.id = historique_e_s_id', array("quantite"), "inner");
+        $select->join('produit', 'produit.id = historique_e_s_produit.produit_id', array("prix_base"), "inner");
+        $select->join('user', 'user.id = historique_e_s.user_id', array("name","firstname"), "inner");
+        $select->where(array("stock.user_id" => $user->id));
+        $select->order("historique_e_s.created_at DESC");
+
+        return $this->tableGateway->selectWith($select);
+    }
+    public function fetchMouvement(User $user, $id){
+        $sql = new Sql($this->tableGateway->getAdapter());
+        $select = $sql->select();
+        $select->columns(array("*"));
+        $select->from('historique_e_s_produit');
+        $select->join('produit', 'produit.id = historique_e_s_produit.produit_id', array("libelle", "prix_base"), "inner");
+        $select->where(array("historique_e_s_id" => $id));
+
+        return $this->tableGateway->selectWith($select);
+    }
     public function fetchAllSocieteActiveArray($libelle = null, $withIdUser = false, $orderby = null)
     {
         $return = array();

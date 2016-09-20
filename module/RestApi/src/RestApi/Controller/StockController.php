@@ -62,22 +62,14 @@ class StockController extends AbstractRestfulController
                     throw new \Exception("Invalid parameters.");
                 }
             }
-
-            /* recherche des informations de quantite du stock entreprise des produits */
-            $where = array();
-                        
-            $tab = $this->getServiceLocator()->get("ProductTable")->fetchAllByStock($user, $where, "libelle");
             
-            $return = array();
-            foreach ($tab as $i) {
-                $return[] = array(
-                    "id" => $i->id,
-                    "libelle" => $i->libelle,
-                    "prix_base" => $i->prix_base,
-                    "quantite" => $i->quantite
-                );
+            $return = null;
+            if(array_key_exists("a", $_GET)) {
+                $return = $this->_getHistorique($user, $_GET['idH']);
+            } else {
+                $return = $this->_listByStock($user);
             }
-            
+
             $response->setContent($_GET['callback'].'('.json_encode(array("data" => $return)).')');
         }catch( \Exception $e) {
             $response->setStatusCode(200)->setContent($_GET['callback'].'('."ko : ".$e->getMessage().')');
@@ -85,6 +77,37 @@ class StockController extends AbstractRestfulController
         
         $response = $this->getResponseWithHeader();
         return $response;
+    }
+    
+    private function _listByStock($user) {
+        $where = array();
+        $tab = $this->getServiceLocator()->get("ProductTable")->fetchAllByStock($user, $where, "libelle");
+        $return = array();
+        foreach ($tab as $i) {
+            $return[] = array(
+                "id" => $i->id,
+                "libelle" => $i->libelle,
+                "prix_base" => $i->prix_base,
+                "quantite" => $i->quantite
+            );
+        }
+        return $return;
+    }
+    
+    private function _getHistorique($user, $id){
+        /* recherche des informations de quantite du stock entreprise des produits */
+        $tab = $this->getServiceLocator()->get("StockTable")->fetchMouvement($user, $id);
+
+        $return = array();
+        foreach ($tab as $i) {
+            $return[] = array(
+                "produit" => $i->libelle,
+                "quantite" => $i->quantite,
+                "prix_base" => $i->prix_base,
+                "total" => ($i->prix_base * abs($i->quantite))
+            );
+        }
+        return $return;
     }
      
     public function getList()
@@ -112,24 +135,14 @@ class StockController extends AbstractRestfulController
                 }
             }
 
-            /* recherche des informations de quantite du stock entreprise des produits */
-            $where = array();
-            if(array_key_exists("l", $_GET)) {
-                $t = explode ("_", $_GET['l']);
-                $where[] = "produit.id IN (".implode(",", $t).")";
+            $return = null;
+            if(array_key_exists("a", $_GET)) {
+                $return = $this->_listHistorique($user);
+            } else {
+                $return = $this->_listStock($user);
             }
             
-            $tab = $this->getServiceLocator()->get("ProductTable")->fetchAllWithStock($user, $where, "libelle");
             
-            $return = array();
-            foreach ($tab as $i) {
-                $return[] = array(
-                    "id" => $i->id,
-                    "libelle" => $i->libelle,
-                    "prix_base" => $i->prix_base,
-                    "quantite" => $i->quantite
-                );
-            }
             
             $response->setContent($_GET['callback'].'('.json_encode(array("data" => $return)).')');
         }catch( \Exception $e) {
@@ -138,6 +151,50 @@ class StockController extends AbstractRestfulController
         
         $response = $this->getResponseWithHeader();
         return $response; 
+    }
+    
+    private function _listStock($user) {
+        /* recherche des informations de quantite du stock entreprise des produits */
+        $where = array();
+        if(array_key_exists("l", $_GET)) {
+            $t = explode ("_", $_GET['l']);
+            $where[] = "produit.id IN (".implode(",", $t).")";
+        }
+
+        $tab = $this->getServiceLocator()->get("ProductTable")->fetchAllWithStock($user, $where, "libelle");
+
+        $return = array();
+        foreach ($tab as $i) {
+            $return[] = array(
+                "id" => $i->id,
+                "libelle" => $i->libelle,
+                "prix_base" => $i->prix_base,
+                "quantite" => $i->quantite
+            );
+        }
+        return $return;
+    }
+    
+    private function _listHistorique($user)  {
+        /* recherche des informations de quantite du stock entreprise des produits */
+        $tab = $this->getServiceLocator()->get("StockTable")->fetchAllMouvement($user);
+
+        $return = array();
+        foreach ($tab as $i) {
+            if(array_key_exists($i->id, $return)) {
+                $return[$i->id]['montantht'] += ($i->prix_base * abs($i->quantite));
+                continue;
+            } 
+            $return[$i->id] = array(
+                "id" => $i->id,
+                "created_at" => $i->created_at,
+                "motif" => $i->motif,
+                "montantht" => ($i->prix_base * abs($i->quantite)),
+                "user" => $i->name." ".$i->firstname,
+            );
+        }
+        $return = (array_values($return));
+        return $return;
     }
      
     public function create($data)

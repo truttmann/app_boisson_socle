@@ -27,6 +27,22 @@ class Stock implements InputFilterAwareInterface
         $this->created_at         = (!empty($data['created_at'])) ? $data['created_at'] : null;
         $this->updated_at         = (!empty($data['updated_at'])) ? $data['updated_at'] : null;
         $this->updated_by   = (!empty($data['updated_by'])) ? $data['updated_by'] : null;
+        
+        $t = array_keys($data);
+        foreach($t as $k) {
+            if(in_array($k, array(
+                "id",
+                "user_id",
+                "produit_id",
+                "quantite", 
+                "created_at",
+                "updated_at",
+                "updated_by")
+            )) {
+                continue;
+            }
+            $this->$k = $data[$k];
+        }
     }
     
     // Add the following method:
