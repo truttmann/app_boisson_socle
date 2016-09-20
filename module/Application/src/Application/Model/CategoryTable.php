@@ -45,6 +45,66 @@ class CategoryTable
         }
         return $row;
     }
+    public function getNextCategory($id)
+    {
+        $id  = (int) $id;
+        
+        $rowset = $this->tableGateway->select(function(\Zend\Db\Sql\Select $select) use($id){
+            $select->where->greaterThan('id', $id);   
+            $select->where->isNull('categorie_id');
+        });
+        $row = $rowset->current();
+        if (!$row) {
+            return $this->getFirstCategoryParent($id);
+        }
+        return $row;
+    }
+    public function getPreviousCategory($id)
+    {
+        $id  = (int) $id;
+        
+        $rowset = $this->tableGateway->select(function(\Zend\Db\Sql\Select $select) use($id){
+            $select->where->lessThan('id', $id);  
+            $select->where->isNull('categorie_id');
+        });
+        $row = $rowset->current();
+        if (!$row) {
+            return $this->getLastCategoryParent($id);
+        }
+        return $row;
+    }
+    public function getLastCategoryParent($id)
+    {
+        $id  = (int) $id;
+        
+        $rowset = $this->tableGateway->select(function(\Zend\Db\Sql\Select $select) use($id){
+            $select->where->notEqualTo('id', $id);    
+            $select->where->isNull('categorie_id');
+            $select->order('id DESC');
+        });
+        $row = $rowset->current();
+        if (!$row) {
+            return null;
+        }
+        return $row;
+    }
+    
+    public function getFirstCategoryParent($id)
+    {
+        $id  = (int) $id;
+        
+        $rowset = $this->tableGateway->select(function(\Zend\Db\Sql\Select $select) use($id){
+            $select->where->notEqualTo('id', $id); 
+            $select->where->isNull('categorie_id');            
+            return $select->order('id ASC');
+        });
+        $row = $rowset->current();
+        if (!$row) {
+            return null;
+        }
+        return $row;
+    }
+    
     public function testProduct($id)
     {
         $id  = (int) $id;

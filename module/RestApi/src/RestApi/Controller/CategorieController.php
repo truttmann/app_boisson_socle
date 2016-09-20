@@ -28,6 +28,16 @@ class CategorieController extends AbstractRestfulController
             $obj = $this->getServiceLocator()->get("CategoryTable")->getCategory($id);
             $obj->list_produit = array();
             
+            if(array_key_exists("action", $data)){
+                if($data['action'] == "next") {
+                    return $this->_getNextCategorie($id);
+                }
+                if($data['action'] == "previous") {
+                    return $this->_getPreviousCategorie($id);
+                }
+            }
+            
+            
             $tab = $this->getServiceLocator()->get("CategoryTable")->fetchAll(array("categorie_id = ".$id), "libelle");
             
             $return = array();
@@ -65,6 +75,42 @@ class CategorieController extends AbstractRestfulController
         return $response; 
     }
      
+    private function _getNextCategorie($id) {
+        /* ici, nous allons recherche les informations sur cette categorie, et lister tous les sous catégories, ainsi que tous produits */
+        $request = $this->getRequest();
+        $data = $request->getQuery();
+        $response = $this->getResponseWithHeader();
+        /* Verification du token */
+		try{
+            $obj = $this->getServiceLocator()->get("CategoryTable")->getNextCategory($id);
+            
+            $response->setContent($_GET['callback'].'('.json_encode(array("data" => $obj)).')');
+        }catch( \Exception $e) {
+            $response->setStatusCode(200)->setContent($_GET['callback'].'('."ko : ".$e->getMessage().')');
+        }
+        
+        $response = $this->getResponseWithHeader();
+        return $response;
+    }
+    
+    private function _getPreviousCategorie($id) {
+        /* ici, nous allons recherche les informations sur cette categorie, et lister tous les sous catégories, ainsi que tous produits */
+        $request = $this->getRequest();
+        $data = $request->getQuery();
+        $response = $this->getResponseWithHeader();
+        /* Verification du token */
+		try{
+            $obj = $this->getServiceLocator()->get("CategoryTable")->getPreviousCategory($id);
+            
+            $response->setContent($_GET['callback'].'('.json_encode(array("data" => $obj)).')');
+        }catch( \Exception $e) {
+            $response->setStatusCode(200)->setContent($_GET['callback'].'('."ko : ".$e->getMessage().')');
+        }
+        
+        $response = $this->getResponseWithHeader();
+        return $response;
+    }
+    
     public function getList()
     {
         $request = $this->getRequest();

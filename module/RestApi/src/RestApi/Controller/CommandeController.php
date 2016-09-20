@@ -67,16 +67,16 @@ class CommandeController extends AbstractRestfulController
      
     public function getList()
     {
-        $request = $this->getRequest();
+        /*$request = $this->getRequest();
         $data = $request->getQuery();
         $response = $this->getResponseWithHeader();
-        /* Verification du token */
+        /* Verification du token *
 		try{
             if(!array_key_exists("token", $data)) {
                 throw new \Exception("Invalid parameters");
             }
             
-            /*TODO : verification du token */
+            /*TODO : verification du token *
             $user = $this->getServiceLocator()->get("UserTable")->getByToken($data["token"]);
             if(!is_object($user)) {
                 throw new \Exception("Invalid parameters.");
@@ -98,7 +98,10 @@ class CommandeController extends AbstractRestfulController
         }
         
         $response = $this->getResponseWithHeader();
-        return $response; 
+        return $response; */
+        
+        $response = $this->getResponseWithHeader()->setStatusCode(403);
+        return $response;
     }
      
     public function create($data)
